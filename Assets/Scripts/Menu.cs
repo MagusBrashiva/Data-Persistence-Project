@@ -1,19 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-//[DefaultExecutionOrder(1000)]
 public class Menu : MonoBehaviour
 {
     public TMP_InputField nameField;
     public static string Player_Name;
+    public GameObject startButton;
+    public GameObject resumeButton;
 
     private void Start()
     {
@@ -22,21 +20,29 @@ public class Menu : MonoBehaviour
             SceneManager.LoadScene(1, LoadSceneMode.Additive);
         }
 
-        GameObject startButton = GameObject.Find("Start Button");
-        GameObject resumeButton = GameObject.Find("Resume Button");
+        startButton = GameObject.Find("Start Button");
+        resumeButton = GameObject.Find("Resume Button");
 
-        resumeButton.SetActive(false);
+        resumeButton.SetActive(false);        
+    }
 
-        
-        if (MainManager.m_Points > 0)
+    public void Update()
+    {
+        if (MainManager.m_Points > 0 && MainManager.m_GameOver == false)
         {
             startButton.SetActive(false);
             resumeButton.SetActive(true);
+        }
+        else
+        {
+            startButton.SetActive(true);
+            resumeButton.SetActive(false);
         }
     }
 
     public void LoadGame()
     {
+        MainManager.m_Name = Player_Name;
         SceneManager.UnloadSceneAsync(0);
     }
 

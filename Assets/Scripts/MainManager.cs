@@ -1,6 +1,4 @@
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,11 +15,10 @@ public class MainManager : MonoBehaviour
     
     private bool m_Started = false;
     public static int m_Points;
+    public static string m_Name = null;
     public static int highScore;
-    public static string Leader_Name;
-    private string previousName;
-    
-    private bool m_GameOver = false;
+    public static string Leader_Name;    
+    public static bool m_GameOver = false;
 
     
     // Start is called before the first frame update
@@ -50,11 +47,12 @@ public class MainManager : MonoBehaviour
         HighScoreText.gameObject.SetActive(false);
         HighScore();
         m_Points = 0;
+        CurrentScore();
     }
 
     private void Update()
     {
-        if (Menu.Player_Name != previousName)
+        if (m_Name != Menu.Player_Name)
         {
             m_Points = 0;
             CurrentScore();
@@ -78,6 +76,9 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                m_Points = 0;
+                CurrentScore();
+                m_Started= false;
             }
         }
 
@@ -86,8 +87,8 @@ public class MainManager : MonoBehaviour
             SceneManager.LoadScene(0, LoadSceneMode.Additive);
         }
 
-        //Enable only for testing
-        //ResetHighScore(); 
+        // Disable when not testing
+        ResetHighScore(); 
     }
 
     void AddPoint(int point)
@@ -114,7 +115,7 @@ public class MainManager : MonoBehaviour
             HighScore();
         }
 
-        Menu.Player_Name = previousName;
+        m_Name = Menu.Player_Name;
         SaveScore();
 
         m_GameOver = true;
@@ -127,7 +128,11 @@ public class MainManager : MonoBehaviour
         {
             HighScoreText.gameObject.SetActive(true);
             HighScoreText.text = "Leader : " + Leader_Name + "  High Score : " + highScore;
-        }        
+        }
+        else if (highScore == 0)
+        {
+            HighScoreText.text = "Leader : TBD  High Score : 0";
+        }
     }
 
     [System.Serializable]
@@ -162,7 +167,7 @@ public class MainManager : MonoBehaviour
 
     public void ResetHighScore()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
             highScore = 0;
             Leader_Name = null;
